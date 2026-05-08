@@ -1,0 +1,9 @@
+.env
+*.env
+secrets.env
+*.local
+*.log
+*.json
+data/
+logs/
+.DS_Store
