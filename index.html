@@ -192,13 +192,13 @@
     display:flex; align-items:center; gap:8px;
     white-space: nowrap;
     position: relative;
-    opacity: .72;
-    transform: scale(.92);
-    border: 1px solid rgba(255,255,255,.035);
-    background: rgba(255,255,255,.028);
-    backdrop-filter: blur(10px) saturate(.9);
-    -webkit-backdrop-filter: blur(10px) saturate(.9);
-    filter: blur(.25px) saturate(.82);
+    opacity: .58;
+    transform: scale(.9);
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(255,255,255,.04);
+    backdrop-filter: blur(16px) saturate(.7);
+    -webkit-backdrop-filter: blur(16px) saturate(.7);
+    filter: blur(.7px) saturate(.65);
     scroll-snap-align: center;
     transition: color .2s ease, opacity .2s ease, transform .22s ease, background .2s ease, filter .2s ease, border-color .2s ease;
   }
@@ -215,8 +215,8 @@
     transition: all .2s ease;
   }
   .tab:not(.active):hover{
-    opacity: .84;
-    filter: blur(.15px) saturate(.9);
+    opacity: .72;
+    filter: blur(.35px) saturate(.8);
   }
   .tab.active{
     color: var(--brand);
@@ -890,6 +890,9 @@
       if (hintDate) {
         window.setTimeout(() => showDateHint(hintDate), 120);
       }
+    } else {
+      card.querySelectorAll('.date.show-hint').forEach((d) => d.classList.remove('show-hint'));
+      card.querySelectorAll('.date.date-open').forEach((d) => d.classList.remove('date-open'));
     }
     updateResetBar();
   }
