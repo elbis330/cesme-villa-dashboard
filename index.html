@@ -884,7 +884,11 @@
     const opened = card.classList.toggle('expanded');
     const link = card.querySelector('.go-btn');
     if (link) link.hidden = !opened;
-    if (opened) animateCardDate(card);
+    if (opened) {
+      const hintDate = card.querySelector('.date[data-hint]');
+      if (hintDate) showDateHint(hintDate);
+      else animateCardDate(card);
+    }
     updateResetBar();
   }
 
