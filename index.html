@@ -1046,11 +1046,11 @@
     document.querySelectorAll('.date.show-hint').forEach((item) => {
       if (item !== date) item.classList.remove('show-hint');
     });
-    date.classList.remove('date-open');
-    void date.offsetWidth;
-    date.classList.add('show-hint', 'date-open');
+    if (!date.classList.contains('date-open')) {
+      date.classList.add('date-open');
+    }
+    date.classList.add('show-hint');
     window.setTimeout(() => date.classList.remove('show-hint'), 1400);
-    window.setTimeout(() => date.classList.remove('date-open'), 780);
   }
 
   function renderFavorites(){
