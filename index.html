@@ -917,6 +917,14 @@
     updateResetBar();
   }
 
+  function uniqueFavCount(){
+    const seen = new Set();
+    favorites.forEach((key) => {
+      seen.add(aliases[key] || key);
+    });
+    return seen.size;
+  }
+
   function syncHearts(){
     document.querySelectorAll('.heart[data-key]').forEach((heart) => {
       const key = heart.dataset.key;
@@ -925,8 +933,9 @@
       heart.setAttribute('aria-pressed', active ? 'true' : 'false');
       heart.setAttribute('aria-label', active ? 'Favorilerden çıkar' : 'Favorilere ekle');
     });
-    favCount.textContent = String(favorites.size);
-    favSummary.textContent = favorites.size + ' ilan';
+    const count = uniqueFavCount();
+    favCount.textContent = String(count);
+    favSummary.textContent = count + ' ilan';
   }
 
   function linkedKey(key){
