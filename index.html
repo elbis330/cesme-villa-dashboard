@@ -717,10 +717,12 @@
       drag = {
         x: event.clientX,
         y: event.clientY,
+        t: performance.now(),
         stepX: event.clientX,
         pointerId: event.pointerId,
         moved: false,
         locked: false,
+        dir: 0,
         lastStepAt: 0
       };
       try {
@@ -734,11 +736,17 @@
       const dy = event.clientY - drag.y;
       if (!drag.locked) {
         if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dy) > Math.abs(dx) * 1.5) {
+          drag = null;
+          tabScroller.classList.remove('is-dragging');
+          return;
+        }
         drag.locked = true;
+        drag.dir = dx < 0 ? 1 : -1;
       }
       event.preventDefault();
-      const step = 96;
-      const cooldown = 240;
+      const step = 72;
+      const cooldown = 280;
       const now = performance.now();
       if (now - drag.lastStepAt < cooldown) return;
       const delta = event.clientX - drag.stepX;
@@ -755,6 +763,15 @@
 
     function finishDrag(event){
       if (drag && event && event.pointerId !== drag.pointerId) return;
+      if (drag && !drag.moved && drag.locked) {
+        const dx = event ? event.clientX - drag.x : 0;
+        const elapsed = performance.now() - drag.t;
+        const velocity = Math.abs(dx) / (elapsed || 1);
+        if ((velocity > 0.25 && Math.abs(dx) > 16) || Math.abs(dx) > 36) {
+          const direction = drag.dir || (dx < 0 ? 1 : -1);
+          drag.moved = moveTab(direction) || drag.moved;
+        }
+      }
       if (drag && drag.moved) {
         suppressClick = true;
         centerActiveTab('smooth');
@@ -795,8 +812,10 @@
       swipe = {
         x: event.clientX,
         y: event.clientY,
+        t: performance.now(),
         pointerId: event.pointerId,
         lock: '',
+        dir: 0,
         moved: false
       };
     }
@@ -808,13 +827,13 @@
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
       if (!swipe.lock) {
-        if (absX < 8 && absY < 8) return;
-        if (absX >= 12 && absX > absY * .68) {
+        if (absX < 6 && absY < 6) return;
+        const ratio = absX / (absY || 1);
+        if (ratio > 0.7) {
           swipe.lock = 'x';
-        } else if (absY >= 18 && absY > absX * 1.45) {
-          swipe.lock = 'y';
+          swipe.dir = dx < 0 ? 1 : -1;
         } else {
-          return;
+          swipe.lock = 'y';
         }
         if (swipe.lock === 'x') {
           listScroller.classList.add('is-swiping');
@@ -825,16 +844,19 @@
       }
       if (swipe.lock !== 'x') return;
       event.preventDefault();
-      if (absX > 16) swipe.moved = true;
+      if (absX > 12) swipe.moved = true;
     }
 
     function finishSwipe(event){
       if (!swipe || (event && event.pointerId !== swipe.pointerId)) return;
       const dx = event ? event.clientX - swipe.x : 0;
-      const dy = event ? event.clientY - swipe.y : 0;
-      const isHorizontal = swipe.lock === 'x' && Math.abs(dx) >= 58 && Math.abs(dx) > Math.abs(dy) * .68;
-      if (isHorizontal) {
-        const changed = moveTab(dx < 0 ? 1 : -1);
+      const elapsed = performance.now() - swipe.t;
+      const velocity = Math.abs(dx) / (elapsed || 1);
+      const isFastFlick = velocity > 0.3 && Math.abs(dx) > 20;
+      const isLongSwipe = Math.abs(dx) >= 40;
+      if (swipe.lock === 'x' && (isFastFlick || isLongSwipe)) {
+        const direction = swipe.dir || (dx < 0 ? 1 : -1);
+        const changed = moveTab(direction);
         if (changed) {
           closeExpanded();
           suppressDocumentClicks();
