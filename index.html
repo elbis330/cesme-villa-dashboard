@@ -8,7 +8,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-Y2VzbWUtZGFzaGJvYXJk'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; upgrade-insecure-requests" />
+<meta name="dashboard-version" content="1778314269" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-Y2VzbWUtZGFzaGJvYXJk'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://elbis330.github.io; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; upgrade-insecure-requests" />
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()" />
 <title>Çeşme Villa İzleme</title>
 <style>
@@ -1187,6 +1188,22 @@
   setupTabRail();
   setupPanelSwipe();
   setTab('all', { instant: true });
+})();
+</script>
+  <script nonce="Y2VzbWUtZGFzaGJvYXJk">
+(function(){
+  var myVer = document.querySelector('meta[name="dashboard-version"]');
+  if (!myVer) return;
+  var current = myVer.getAttribute('content');
+  try {
+    fetch(location.href.split('?')[0] + '?_cb=' + Date.now(), {cache: 'no-store'})
+      .then(function(r){ return r.text(); })
+      .then(function(html){
+        var m = html.match(/dashboard-version[^"]*content="(\d+)"/);
+        if (m && m[1] !== current) location.reload();
+      })
+      .catch(function(){});
+  } catch(e){}
 })();
 </script>
 </body>
