@@ -994,7 +994,11 @@
     badges.className = 'badges';
     if (item.status === 'added') badges.appendChild(badge('YENİ', 'new'));
     if (item.status === 'removed') badges.appendChild(badge('KALDIRILDI', 'removed'));
+    const partner = linkedKey(item.key);
+    const partnerItem = partner ? listings[partner] : null;
+    const hasBoth = Boolean(partnerItem);
     badges.appendChild(badge(item.source, 'site'));
+    if (hasBoth) badges.appendChild(badge(partnerItem.source, 'site'));
 
     const heart = document.createElement('button');
     heart.className = 'heart fav';
@@ -1054,7 +1058,22 @@
       card.appendChild(meta);
     }
 
-    if (item.url) {
+    if (hasBoth && item.url && partnerItem.url) {
+      const wrap = document.createElement('div');
+      wrap.className = 'go-btns';
+      wrap.hidden = true;
+      [{ src: item.source, href: item.url }, { src: partnerItem.source, href: partnerItem.url }].forEach((btn) => {
+        const link = document.createElement('a');
+        link.className = 'go-btn go-dual';
+        link.href = btn.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.referrerPolicy = 'no-referrer';
+        link.innerHTML = btn.src + ' <span class="arrow">→</span>';
+        wrap.appendChild(link);
+      });
+      card.appendChild(wrap);
+    } else if (item.url) {
       const link = document.createElement('a');
       link.className = 'go-btn';
       link.href = item.url;
